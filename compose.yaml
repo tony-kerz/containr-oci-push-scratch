@@ -1,0 +1,16 @@
+services:
+  server:
+    image: containr-push-scratch
+    build:
+      context: .
+      target: dev
+    environment:
+      - NODE_ENV=dev
+      - DEBUG=dbg:*
+      - IS_LOCAL=true
+      - OCI_IMAGE=ttl.sh/oci-scratch:1.0.0
+    ports:
+      - 3000:3000
+    volumes:
+      - .:/app
+      - /var/run/docker.sock:/var/run/docker.sock
