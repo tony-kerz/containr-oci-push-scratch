@@ -1,0 +1,30 @@
+name: flow
+on:
+  push:
+    branches:
+      - master
+      - main
+      - '*/*'
+  release:
+    types: [created]
+  workflow_dispatch: {}
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: latest
+      - run: sudo chmod o+rw /var/run/docker.sock
+      - run: npm run test-container
+      - if: github.event_name == 'release' || github.event_name == 'workflow_dispatch'
+        run: npm run build-container
+      - if: github.event_name == 'workflow_dispatch'
+        run: npm run run-container
+      - if: github.event_name == 'release'
+        run: |
+          echo ${{ secrets.REGISTRY_PASS }} | docker login -u ${{ secrets.REGISTRY_USER }} --password-stdin
+          docker push ${{ vars.REGISTRY_PATH }}/$(npm run tag --silent)
+          docker logout
+          cat ~/.docker/config.json

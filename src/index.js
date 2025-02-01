@@ -2,10 +2,9 @@ import assert from 'node:assert'
 import config from 'config'
 import _ from 'lodash'
 import debug from '@watchmen/debug'
-import {withImages, withImage} from '@watchmen/containr'
+import {withImages} from '@watchmen/containr'
 import {stringify} from '@watchmen/helpr'
 import {getUid, toParams} from '@watchmen/containr/util'
-// import {pushOci} from '@watchmen/containr/oci'
 
 const dbg = debug(import.meta.url)
 
@@ -17,7 +16,6 @@ async function main() {
 
   const user = await getUid()
 
-  // const images = _.omit(config.containr.images, ['oras'])
   const images = config.containr.images
 
   dbg('images=%o', images)
@@ -31,8 +29,8 @@ async function main() {
 
     async closure(withContainer) {
       // these steps here prior to the push are arbitrary in this example,
-      // but they could be considered important pre-requisites to the push
-      // like traditional ci steps where the push would only occur if they succeed...
+      // but they could be important pre-requisites to the push like
+      // traditional ci steps where the push would only occur if they succeed...
       //
       const withGcloud = (args) => withContainer({...args, image: 'gcloud'})
       const withOras = (args) => withContainer({...args, image: 'oras'})
@@ -50,11 +48,6 @@ async function main() {
       dbg('targets=%s', stringify(_targets))
       assert(_targets, 'target files should b found')
 
-      // call to pushOci could occur after call to withImages instead of in this closure
-      // because it handles it's own container interaction vs using behavior of withImages
-      // but just placing it here for organization.
-      //
-      //
       const repo = process.env.GITHUB_REPOSITORY
       // eg tony-kerz/containr-push-scratch
       //
@@ -67,40 +60,14 @@ async function main() {
       assert(sha, 'sha required')
       const _sha = sha.slice(0, 7)
       const image = `${tagPath}/${_repo}:${_sha}`
-      // const {stdout: push, stderr: pushError} = await pushOci({
-      //   image: `${tagPath}/${_repo}:${_sha}`,
-      //   targets,
-      //   user,
-      //   annotations: {foo: 'bar'},
-      // })
-      // const home = process.env.HOME
-      // const creds = `${home}/.docker/config.json`
-      // dbg('home=%s', home)
-      // const volumes = {
-      //   '/tmp': '/tmp',
-      //   [home]: home,
-      // }
-      // const env = {
-      //   HOME: home,
-      // }
 
       const annotations = {foo: 'bar'}
-      // const {stdout: push, stderr: pushError} = await withImage({
-      //   image: config.containr.images.oras,
-      //   command: `push ${toParams({map: annotations, param: '--annotation'})} ${image} ${targets.join(' ')} `,
-      //   volumes,
-      //   user,
-      //   env,
-      // })
-      // const tmp = '/tmp'
+
       await withOras({
-        // volumes: {tmp, creds},
         user,
-        // input: ['which oras'],
         input: `oras push ${toParams({map: annotations, param: '--annotation'})} ${image} ${targets.join(':  ')} `,
         env: {HOME: process.env.HOME},
       })
-      // dbg('push: out=%o, err=%o', push, pushError)
     },
   })
 }
