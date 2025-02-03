@@ -16,7 +16,7 @@ ENV entrypoint=$entrypoint
 ENV appPath=/app
 WORKDIR $appPath
 
-ARG cmd=src/index.js
+ARG cmd=${appPath}/src/index.js
 ENV cmd=$cmd
 
 COPY . .

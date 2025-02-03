@@ -4,7 +4,7 @@
   "exports": "./src/index.js",
   "type": "module",
   "scripts": {
-    "start": "node --env-file=.env src/index.js",
+    "start": "CONFIGR_YAML=test/configr.test.yml node --env-file=.env src/index.js",
     "watch": "node --env-file=.env --watch-path . src/index.js",
     "pretest": "npx xo",
     "test": "DEBUG=dbg:* NODE_ENV=test npx ava --serial",
@@ -15,7 +15,7 @@
     "posttest-container": "npm run clear",
     "lock": "docker build -t $(npm run -s tag) --target lock --output type=local,dest=. .",
     "build-container": "docker build -t $(npm run -s tag) --progress=plain --target=prod .",
-    "run-container": "docker run -v /var/run/docker.sock:/var/run/docker.sock -v /tmp:/tmp -u $(npm run -s user) -e OCI_IMAGE=ttl.sh/oci-scratch:1.0.0 -e IS_LOCAL=1 -e DEBUG=dbg:* -e HOME=${HOME} $(npm run -s tag)",
+    "run-container": "docker run -v /var/run/docker.sock:/var/run/docker.sock -v /tmp:/tmp -u $(npm run -s user) -e GITHUB_REPOSITORY tonykerz/ -e IS_LOCAL=1 -e DEBUG=dbg:* -e HOME=${HOME} $(npm run -s tag)",
     "postrun-container": "npm run clear",
     "tag": "echo ${npm_package_name}:${npm_package_version}",
     "tag-sha": "echo ${npm_package_name}:$(npm run -s sha)",
@@ -28,12 +28,13 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
+    "@watchmen/configr": "^1.0.6",
     "@watchmen/containr": "^1.0.11",
     "@watchmen/debug": "^2.0.8",
     "@watchmen/helpr": "^3.0.0",
-    "config": "^3.3.12",
     "fs-extra": "^11.3.0",
-    "lodash": "^4.17.21"
+    "lodash": "^4.17.21",
+    "yaml": "^2.7.0"
   },
   "devDependencies": {
     "ava": "^6.2.0",
