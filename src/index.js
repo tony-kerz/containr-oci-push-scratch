@@ -99,7 +99,7 @@ async function getImageMeta(withContainer) {
 
   const re = remote.startsWith('git@')
     ? /^.+:(?<org>.+)\/(?<repo>.+)\.git$/
-    : /^.+\/(?<org>.+)\/(?<repo>.+)\.git$/
+    : /^.+\/(?<org>.+)\/(?<repo>[^.]+)(?:\.git)?$/
 
   const match = remote.match(re)
   const repo = match.groups.repo
