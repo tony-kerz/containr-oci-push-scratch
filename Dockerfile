@@ -46,4 +46,6 @@ CMD ["sh", "-c", "npm test"]
 FROM base AS prod
 RUN npm ci --omit=dev
 
+ENV NODE_CONFIG_DIR=${appPath}/config
+
 CMD ["sh", "-c", "${entrypoint} ${cmd}"]

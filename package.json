@@ -3,8 +3,11 @@
   "version": "1.0.1",
   "exports": "./src/index.js",
   "type": "module",
+  "config": {
+    "cfg": "test/configr.test.yml"
+  },
   "scripts": {
-    "start": "CONFIGR_YAML=test/configr.test.yml node --env-file=.env src/index.js",
+    "start": "CONFIGR_YAML=${npm_package_config_cfg} node --env-file=.env src/index.js",
     "watch": "node --env-file=.env --watch-path . src/index.js",
     "pretest": "npx xo",
     "test": "DEBUG=dbg:* NODE_ENV=test npx ava --serial",
@@ -15,21 +18,22 @@
     "posttest-container": "npm run clear",
     "lock": "docker build -t $(npm run -s tag) --target lock --output type=local,dest=. .",
     "build-container": "docker build -t $(npm run -s tag) --progress=plain --target=prod .",
-    "run-container": "docker run -v /var/run/docker.sock:/var/run/docker.sock -v /tmp:/tmp -u $(npm run -s user) -e GITHUB_REPOSITORY tonykerz/ -e IS_LOCAL=1 -e DEBUG=dbg:* -e HOME=${HOME} $(npm run -s tag)",
+    "run-container": "docker run -v /var/run/docker.sock:/var/run/docker.sock -v /tmp:/tmp -u $(npm run -s user) -v $(npm run -s cfg):$(npm run -s cfg) -v $(pwd):$(pwd) -e CONFIGR_YAML=$(npm run -s cfg) -e DEBUG=dbg:* -e HOME=${HOME} -w $(pwd) $(npm run -s tag)",
     "postrun-container": "npm run clear",
     "tag": "echo ${npm_package_name}:${npm_package_version}",
     "tag-sha": "echo ${npm_package_name}:$(npm run -s sha)",
     "tag-full": "echo ${npm_package_name}:${npm_package_version}-$(npm run -s sha)",
     "user": "echo $(id -u)",
     "clear": "rm -rf /tmp/containr",
-    "sha": "git rev-parse --short HEAD"
+    "sha": "git rev-parse --short HEAD",
+    "cfg": "echo $(pwd)/${npm_package_config_cfg}"
   },
   "author": "",
   "license": "ISC",
   "description": "",
   "dependencies": {
     "@watchmen/configr": "^1.0.6",
-    "@watchmen/containr": "^1.0.11",
+    "@watchmen/containr": "^1.1.0",
     "@watchmen/debug": "^2.0.8",
     "@watchmen/helpr": "^3.0.0",
     "fs-extra": "^11.3.0",

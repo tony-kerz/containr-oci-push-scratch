@@ -1,11 +1,10 @@
 import assert from 'node:assert'
 import {configr} from '@watchmen/configr'
 import _ from 'lodash'
-import {execa} from 'execa'
 import debug from '@watchmen/debug'
 import {withImages} from '@watchmen/containr'
 import {pretty} from '@watchmen/helpr'
-import {getUid, toParams} from '@watchmen/containr/util'
+import {getUid, toFlags} from '@watchmen/containr/util'
 
 const dbg = debug(import.meta.url)
 
@@ -14,8 +13,8 @@ async function main() {
   // is the work directory and it's assumed to be populated with files of interest
   // think a git-hub-action work folder after a checkout action has been performed
   //
-
   const user = await getUid()
+  dbg('user=%o', user)
 
   const images = configr.containr.images
   dbg('images=%o', images)
@@ -27,19 +26,26 @@ async function main() {
 
   await withImages({
     images,
-
+    user,
     async closure(withContainer) {
       // this example just uses oras to push an oci image, but
       // but important pre-requisites to the push can also be included here
       // such that the push would only occur if they succeed...
       //
+
+      // defining custom with-function not required,
+      // just illustrating pattern to enhance code readability
+      // when using same image for multiple calls in a code block.
+      //
+      // can also just call withContainer multiple times passing in same image name
+      //
       const withOras = (args) => withContainer({...args, image: 'oras'})
 
       // this shows that files from container are present
       //
-      const which = await withOras({input: 'which oras'})
-      dbg('which=%s', which)
-      assert(which, 'oras binary should b on path')
+      const oras = await withOras({input: 'which oras'})
+      dbg('oras=%s', oras)
+      assert(oras, 'oras binary should b on path')
 
       // this shows that files from work folder (in this case current working directory)
       // are also present
@@ -48,14 +54,15 @@ async function main() {
       dbg('targets=%s', pretty(_targets))
       assert(_targets, 'target files should b found')
 
-      const image = await getImageMeta()
+      // pass withContainer into utility function for use there
+      //
+      const image = await getImageMeta(withContainer)
       dbg('image=%s', pretty(image))
 
       const _annotations = {...annotations, ...image}
 
       await withOras({
-        user,
-        input: `oras push ${toParams({map: _annotations, param: '--annotation'})} ${image.name} ${targets.join(' ')}`,
+        input: `oras push ${toFlags({map: _annotations, flag: 'annotation'})} ${image.name} ${targets.join(' ')}`,
         env: {HOME: process.env.HOME},
       })
     },
@@ -64,14 +71,30 @@ async function main() {
 
 await main()
 
-async function getImageMeta() {
-  // remote one of:
-  // (1) git@github.com:tony-kerz/push-scratch.git
-  // (2) https://github.com/tony-kerz/push-scratch.git
+async function getImageMeta(withContainer) {
+  // defining custom with-function not required,
+  // just illustrating pattern to enhance code readability
+  // when using same image for multiple calls in a code block.
   //
-  const {stdout: remote, stderr: remoteErr} =
-    await execa`git remote get-url origin`
-  dbg('remote=%s, err=%o', remote, remoteErr)
+  // can also just call withContainer multiple times passing in image name
+  //
+  const withGit = (args) => withContainer({...args, image: 'git'})
+
+  // this part is not required, just included for illustration
+  //
+  const git = await withGit({input: 'which git'})
+  dbg('git=%s', git)
+  assert(git, 'git binary should b on path')
+
+  const id = await withGit({input: 'id -u'})
+  dbg('id=%s', id)
+
+  // remote pattern one of:
+  // (1) git@github.com:an-org/a-repo.git
+  // (2) https://github.com/an-org/a-repo.git
+  //
+  const remote = await withGit({input: 'git remote get-url origin'})
+  dbg('remote=%s', remote)
   assert(remote, 'remote required')
 
   const re = remote.startsWith('git@')
@@ -85,11 +108,12 @@ async function getImageMeta() {
   const path = configr.push.path ?? org
   assert(path, `unexpected inability to extract org from remote=${remote}`)
 
-  const {stdout: sha, stderr: shaErr} = await execa`git rev-parse --short HEAD`
-  dbg('sha=%s, err=%o', sha, shaErr)
+  const sha = await withGit({input: 'git rev-parse --short HEAD'})
+  dbg('sha=%s', sha)
   assert(sha, 'sha required')
 
   const host = configr.push.host
+
   return {
     name: `${host}/${path}/${repo}:${sha}`,
     org,
