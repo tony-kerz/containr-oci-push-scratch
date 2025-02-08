@@ -5,6 +5,7 @@ import debug from '@watchmen/debug'
 import {withImages} from '@watchmen/containr'
 import {pretty} from '@watchmen/helpr'
 import {getUid, toFlags} from '@watchmen/containr/util'
+import fs from 'fs-extra'
 
 const dbg = debug(import.meta.url)
 
@@ -23,6 +24,10 @@ async function main() {
   const {path, targets, annotations} = configr.push
   assert(path, 'path required')
   assert(targets, 'targets required')
+
+  const out = configr.output
+  dbg('out=%s', out)
+  fs.ensureFileSync(out)
 
   await withImages({
     images,
@@ -58,6 +63,7 @@ async function main() {
       //
       const image = await getImageMeta(withContainer)
       dbg('image=%s', pretty(image))
+      fs.appendFileSync(out, `image=${image.name}\n`)
 
       const _annotations = {...annotations, ...image}
 

@@ -20,4 +20,5 @@ module.exports = {
       isCwd: true,
     },
   },
+  output: 'output.properties',
 }
