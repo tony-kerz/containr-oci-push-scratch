@@ -1,4 +1,4 @@
 node_modules
 work
 .env
-output.properties
+*.json

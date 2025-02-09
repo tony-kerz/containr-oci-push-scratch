@@ -20,5 +20,5 @@ module.exports = {
       isCwd: true,
     },
   },
-  output: 'output.properties',
+  output: 'out.json',
 }

@@ -63,7 +63,6 @@ async function main() {
       //
       const image = await getImageMeta(withContainer)
       dbg('image=%s', pretty(image))
-      fs.appendFileSync(out, `image=${image.name}\n`)
 
       const _annotations = {...annotations, ...image}
 
@@ -71,6 +70,8 @@ async function main() {
         input: `oras push ${toFlags({map: _annotations, flag: 'annotation'})} ${image.name} ${targets.join(' ')}`,
         env: {HOME: process.env.HOME},
       })
+
+      fs.writeFileSync(out, JSON.stringify({image}))
     },
   })
 }
