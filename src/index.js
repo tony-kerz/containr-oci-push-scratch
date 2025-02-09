@@ -27,7 +27,6 @@ async function main() {
 
   const out = configr.output
   dbg('out=%s', out)
-  fs.ensureFileSync(out)
 
   await withImages({
     images,
