@@ -33,7 +33,7 @@
   "description": "",
   "dependencies": {
     "@watchmen/configr": "^1.1.0",
-    "@watchmen/containr": "^1.1.0",
+    "@watchmen/containr": "^1.1.2",
     "@watchmen/debug": "^2.0.8",
     "@watchmen/helpr": "^3.0.0",
     "fs-extra": "^11.3.0",
@@ -42,7 +42,7 @@
   },
   "devDependencies": {
     "ava": "^6.2.0",
-    "prettier": "^3.5.0",
+    "prettier": "^3.5.1",
     "xo": "^0.60.0"
   }
 }
