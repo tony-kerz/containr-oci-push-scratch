@@ -67,7 +67,6 @@ async function main() {
 
       await withOras({
         input: `oras push ${toFlags({map: _annotations, flag: 'annotation'})} ${image.name} ${targets.join(' ')}`,
-        env: {HOME: process.env.HOME},
       })
 
       fs.writeFileSync(out, JSON.stringify({image}))

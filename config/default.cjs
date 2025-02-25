@@ -10,6 +10,7 @@ module.exports = {
         // home needed to pick up registry login creds
         //
         volumes: {[home]: home},
+        env: {HOME: home},
       },
       git: {
         name: 'alpine/git:v2.47.1',
