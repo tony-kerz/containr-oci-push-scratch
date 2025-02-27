@@ -10,6 +10,9 @@ import {execa} from 'execa'
 
 const dbg = debug(import.meta.url)
 
+const hostCreds = configr.containr.creds.host
+const creds = configr.containr.creds.local
+
 async function main() {
   // this example represents a scenario where the current directory
   // is the work directory and it's assumed to be populated with files of interest
@@ -29,9 +32,8 @@ async function main() {
   const out = configr.output
   dbg('out=%s', out)
 
-  const creds = process.env.REGISTRY_CREDS
-  if (creds) {
-    dbg('registry-creds=%s', creds)
+  if (hostCreds) {
+    dbg('registry-creds=%s', hostCreds)
     const {stdout, stderr} = await execa({
       shell: true,
     })`ls -la ${creds}`
@@ -74,10 +76,10 @@ async function main() {
       const image = await getImageMeta(withContainer)
       dbg('image=%s', pretty(image))
 
-      const creds = await withOras({
-        input: `ls -la ${process.env.HOME}/.docker/config.json`,
+      const _creds = await withOras({
+        input: `ls -la ${creds}`,
       })
-      dbg('creds=%s', creds)
+      dbg('creds=%s', _creds)
 
       const _annotations = {...annotations, ...image}
 

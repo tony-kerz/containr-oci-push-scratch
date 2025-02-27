@@ -1,8 +1,13 @@
 const home = process.env.HOME
-const creds = process.env.REGISTRY_CREDS
+const hostCreds = process.env.REGISTRY_CREDS
+const creds = `${home}/.docker/config.json`
 
 module.exports = {
   containr: {
+    creds: {
+      host: hostCreds,
+      local: creds,
+    },
     images: {
       oras: {
         name: 'ghcr.io/oras-project/oras:v1.2.2',
@@ -11,7 +16,7 @@ module.exports = {
         // home needed to pick up registry login creds
         //
         volumes: {
-          ...(creds ? {[`${home}/.docker/config.json`]: creds} : {}),
+          ...(hostCreds ? {[creds]: hostCreds} : {}),
         },
         env: {HOME: home},
       },
