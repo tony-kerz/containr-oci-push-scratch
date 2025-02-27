@@ -1,6 +1,6 @@
 {
   "name": "containr-oci-push-scratch",
-  "version": "1.2.2",
+  "version": "1.2.3",
   "exports": "./src/index.js",
   "type": "module",
   "config": {
