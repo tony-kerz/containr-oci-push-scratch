@@ -63,6 +63,11 @@ async function main() {
       const image = await getImageMeta(withContainer)
       dbg('image=%s', pretty(image))
 
+      const creds = await withOras({
+        input: `ls -la ${process.env.HOME}/.docker/config.json`,
+      })
+      dbg('creds=%s', creds)
+
       const _annotations = {...annotations, ...image}
 
       await withOras({
