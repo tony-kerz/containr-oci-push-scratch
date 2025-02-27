@@ -6,6 +6,7 @@ import {withImages} from '@watchmen/containr'
 import {pretty} from '@watchmen/helpr'
 import {getUid, toFlags} from '@watchmen/containr/util'
 import fs from 'fs-extra'
+import {execa} from 'execa'
 
 const dbg = debug(import.meta.url)
 
@@ -27,6 +28,16 @@ async function main() {
 
   const out = configr.output
   dbg('out=%s', out)
+
+  const creds = process.env.REGISTRY_CREDS
+  if (creds) {
+    dbg('registry-creds=%s', creds)
+    const {stdout, stderr} = await execa({
+      shell: true,
+    })`ls -la ${creds}`
+    dbg('creds: out=%s, err=%s', stdout, stderr)
+    assert(_.isEmpty(stderr))
+  }
 
   await withImages({
     images,
