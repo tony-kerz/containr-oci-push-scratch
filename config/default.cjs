@@ -1,4 +1,5 @@
 const home = process.env.HOME
+const creds = process.env.REGISTRY_CREDS
 
 module.exports = {
   containr: {
@@ -9,7 +10,9 @@ module.exports = {
         // docker login required before running, and...
         // home needed to pick up registry login creds
         //
-        volumes: {[home]: home},
+        volumes: {
+          ...(creds ? {[creds]: `${home}/.docker/config.json`} : {}),
+        },
         env: {HOME: home},
       },
       git: {

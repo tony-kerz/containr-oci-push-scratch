@@ -8,6 +8,7 @@
   },
   "scripts": {
     "start": "CONFIGR_INPUT=${npm_package_config_cfg} node --env-file=.env src/index.js",
+    "creds": "CONFIGR_INPUT=${npm_package_config_cfg} REGISTRY_CREDS=${HOME}/.docker/config.json node --env-file=.env src/index.js",
     "watch": "node --env-file=.env --watch-path . src/index.js",
     "pretest": "npx xo",
     "test": "DEBUG=dbg:* NODE_ENV=test npx ava --serial",
