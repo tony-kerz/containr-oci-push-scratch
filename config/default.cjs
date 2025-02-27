@@ -11,7 +11,7 @@ module.exports = {
         // home needed to pick up registry login creds
         //
         volumes: {
-          ...(creds ? {[creds]: `${home}/.docker/config.json`} : {}),
+          ...(creds ? {[`${home}/.docker/config.json`]: creds} : {}),
         },
         env: {HOME: home},
       },
