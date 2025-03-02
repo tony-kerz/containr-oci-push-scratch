@@ -3,7 +3,7 @@ import {configr} from '@watchmen/configr'
 import _ from 'lodash'
 import debug from '@watchmen/debug'
 import {withImages} from '@watchmen/containr'
-import {pretty} from '@watchmen/helpr'
+import {pretty, getPackage} from '@watchmen/helpr'
 import {getUid, toFlags} from '@watchmen/containr/util'
 import fs from 'fs-extra'
 import {execa} from 'execa'
@@ -148,10 +148,4 @@ async function getImageMeta(withContainer) {
     sha,
     host,
   }
-}
-
-async function getPackage() {
-  const path = process.env.appPath ?? '/app'
-  dbg('app-path=%s', path)
-  return JSON.parse(await fs.readFile(`${path}/package.json`, 'utf8'))
 }
