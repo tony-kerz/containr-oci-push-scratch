@@ -25,9 +25,6 @@ module.exports = {
         entrypoint: 'ash',
       },
     },
-    work: {
-      isCwd: true,
-    },
   },
   output: 'out.json',
 }
