@@ -14,6 +14,9 @@ const hostCreds = configr.containr.creds.host
 const creds = configr.containr.creds.local
 
 async function main() {
+  const pack = await getPackage()
+  dbg('package.version=%s', pack.version)
+
   // this example represents a scenario where the current directory
   // is the work directory and it's assumed to be populated with files of interest
   // think a git-hub-action work folder after a checkout action has been performed
@@ -145,4 +148,10 @@ async function getImageMeta(withContainer) {
     sha,
     host,
   }
+}
+
+async function getPackage() {
+  const path = process.env.appPath ?? '/app'
+  dbg('app-path=%s', path)
+  return JSON.parse(await fs.readFile(`${path}/package.json`, 'utf8'))
 }
