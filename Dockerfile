@@ -14,6 +14,8 @@ ARG entrypoint=node
 ENV entrypoint=$entrypoint
 
 ENV appPath=/app
+# PACKAGE_PATH env for use with helpr function to grab package info
+ENV PACKAGE_PATH=$appPath
 WORKDIR $appPath
 
 ARG cmd=${appPath}/src/index.js
